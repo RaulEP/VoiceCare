@@ -44,6 +44,7 @@ usersdb = {1: {
 
 #Parser
 DrugDetail_put_args = reqparse.RequestParser()
+DrugDetail_put_args.add_argument("drug_id", type=int, help="Drug Name", required=True)
 DrugDetail_put_args.add_argument("drug_name", type=str, help="Drug Name", required=True)
 DrugDetail_put_args.add_argument("dosage", type=str, help="How many pills should you take", required=True)
 DrugDetail_put_args.add_argument("frequency_per_day", type=str, help="How many times a day should you take the medicine", required=True)
@@ -66,9 +67,11 @@ class PrescriptionInfo(Resource):
 class AddPrescription(Resource):
     def put(self, user_id, prescription_id, drug_id):
         args = DrugDetail_put_args.parse_args()
-        usersdb[user_id]["prescriptions"][prescription_id].append({"drug_id": drug_id})
-        usersdb[user_id]["prescriptions"][prescription_id][2].update(args)
+        usersdb[user_id]["prescriptions"][prescription_id] = []
         print(usersdb[user_id]["prescriptions"][prescription_id])
+        usersdb[user_id]["prescriptions"][prescription_id].append(args)
+        print(usersdb[user_id]["prescriptions"][prescription_id])
+        #print(usersdb[user_id]["prescriptions"][prescription_id])
         
 
 class AddDrugToPrescription(Resource):
@@ -110,7 +113,7 @@ class Drugs(Resource):
 api.add_resource(DrugSideEffects, "/drugSideEffects/<string:drug_name>")
 api.add_resource(Drugs, "/drugs/<string:name>/<int:side_effects>")
 api.add_resource(PrescriptionInfo, "/prescriptionInfo/<int:user_id>/<int:prescription_id>")
-api.add_resource(AddPrescription, "addPrescription/<int:user_id>/<int:prescription_id>/<int:drug_id>")
+api.add_resource(AddPrescription, "/addPrescription/<int:user_id>/<int:prescription_id>/<int:drug_id>")
 
 if __name__ == "__main__":
     app.run(debug=True)
