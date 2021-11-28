@@ -8,6 +8,8 @@ import requests
 import urllib.parse
 import sys
 import codecs
+from deep_translator import GoogleTranslator
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -40,7 +42,8 @@ usersdb = {1: {
                                 }
                 }
             }
-
+#with open('usersdb.json', 'w',encoding="utf-8") as outfile:
+   # json.dump(usersdb, outfile, ensure_ascii=False)
 
 #Parser
 DrugDetail_put_args = reqparse.RequestParser()
@@ -50,6 +53,7 @@ DrugDetail_put_args.add_argument("dosage", type=str, help="How many pills should
 DrugDetail_put_args.add_argument("frequency_per_day", type=str, help="How many times a day should you take the medicine", required=True)
 DrugDetail_put_args.add_argument("treatment_period", type=str, help="How many days does this medication should be taken", required=True)
 
+#Local DB
 class PrescriptionInfo(Resource):
     #Access Prescription Info
     def get(self, user_id, prescription_id):
@@ -65,15 +69,42 @@ class PrescriptionInfo(Resource):
             drug_key += 1
         return messages
 class AddPrescription(Resource):
-    def put(self, user_id, prescription_id, drug_id):
+    def put(self, user_id, prescription_id):
         args = DrugDetail_put_args.parse_args()
-        usersdb[user_id]["prescriptions"][prescription_id] = []
-        print(usersdb[user_id]["prescriptions"][prescription_id])
-        usersdb[user_id]["prescriptions"][prescription_id].append(args)
-        print(usersdb[user_id]["prescriptions"][prescription_id])
-        #print(usersdb[user_id]["prescriptions"][prescription_id])
-        
+        # How many drugs items are there in the database
+        drug_id = len(usersdb[user_id]["prescriptions"][prescription_id]) + 1
 
+        # Create new Drug ID item into Prescription List
+        usersdb[1]["prescriptions"][1].append({"drug_id": drug_id})
+
+        # Remove nested dict.
+        usersdb[user_id]["prescriptions"][prescription_id][2].update({"drug_id": drug_id})
+
+        # Adding args into DB.
+
+        usersdb[user_id]["prescriptions"][prescription_id][2].update(args)
+        return usersdb[user_id]["prescriptions"][prescription_id]
+"""
+class AddDrugToPrescription(Resource):
+    
+    def put(self, user_id, prescription_id):
+        args = DrugDetail_put_args.parse_args()
+        #How many drugs items are there in the database
+        drug_id = len(usersdb[user_id]["prescriptions"][prescription_id]) + 1
+
+        #Create new Drug ID item into Prescription List
+        usersdb[1]["prescriptions"][1].append({"drug_id": drug_id})
+
+        #Remove nested dict.
+        usersdb[user_id]["prescriptions"][prescription_id][2].update({"drug_id":drug_id})
+        
+        #Adding args into DB.
+        usersdb[user_id]["prescriptions"][prescription_id][2].update(args)
+        print()
+        return usersdb[user_id]["prescriptions"][prescription_id]
+"""     
+
+#OpenAPI  
 class AddDrugToPrescription(Resource):
     
     def put(self, user_id, prescription_id):
@@ -104,16 +135,69 @@ class DrugSideEffects(Resource):
         print(side_effects)
         return {str(drug_name): side_effects}
 
-class Drugs(Resource):  
+class DrugEffects(Resource):
+    def get(self, drug_name):
+        url = 'http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList'
+        service_key ="7xbDbSQ3I2s4q0KHPgv0QRpHHE0FzSK6bflU2VxDLO1R2dD%2B5uaYwPNm9EQKqnlySYgKcJ8aX6m4H0t2jMF1iA%3D%3D"
+        num_of_rows = 3
+        response = requests.get(url, 'serviceKey={}&pageNo={}&numOfRows={}&itemName={}&type=json'.format(service_key, 1,num_of_rows,drug_name))
+        side_effects = response.content.decode("utf-8")
+        side_effects = json.loads(side_effects)
+        side_effects = str(side_effects['body']['items'][0]['efcyQesitm'])
+        print(side_effects)
+        return {str(drug_name): side_effects}
 
-    def get(self, name, side_effects):
-        if side_effects == 1:
-            return make_response(flask.json.dumps(drugs[name]["side_effects"], ensure_ascii=False))
+class FoodInteraction(Resource):
+    def get(self, drug_name):
+        url = 'http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList'
+        service_key ="7xbDbSQ3I2s4q0KHPgv0QRpHHE0FzSK6bflU2VxDLO1R2dD%2B5uaYwPNm9EQKqnlySYgKcJ8aX6m4H0t2jMF1iA%3D%3D"
+        num_of_rows = 3
+        response = requests.get(url, 'serviceKey={}&pageNo={}&numOfRows={}&itemName={}&type=json'.format(service_key, 1,num_of_rows,drug_name))
+        side_effects = response.content.decode("utf-8")
+        side_effects = json.loads(side_effects)
+        side_effects = str(side_effects['body']['items'][0]['intrcQesitm'])
+        print(side_effects)
+        return {str(drug_name): side_effects}
 
+class DrugPrecautions(Resource):
+    def get(self, drug_name):
+        url = 'http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList'
+        service_key ="7xbDbSQ3I2s4q0KHPgv0QRpHHE0FzSK6bflU2VxDLO1R2dD%2B5uaYwPNm9EQKqnlySYgKcJ8aX6m4H0t2jMF1iA%3D%3D"
+        num_of_rows = 3
+        response = requests.get(url, 'serviceKey={}&pageNo={}&numOfRows={}&itemName={}&type=json'.format(service_key, 1,num_of_rows,drug_name))
+        side_effects = response.content.decode("utf-8")
+        side_effects = json.loads(side_effects)
+        side_effects = str(side_effects['body']['items'][0]['atpnQesitm'])
+        print(side_effects)
+        return {str(drug_name): side_effects}
+
+class DrugStorage(Resource):
+    def get(self, drug_name):
+        url = 'http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList'
+        service_key ="7xbDbSQ3I2s4q0KHPgv0QRpHHE0FzSK6bflU2VxDLO1R2dD%2B5uaYwPNm9EQKqnlySYgKcJ8aX6m4H0t2jMF1iA%3D%3D"
+        num_of_rows = 3
+        response = requests.get(url, 'serviceKey={}&pageNo={}&numOfRows={}&itemName={}&type=json'.format(service_key, 1,num_of_rows,drug_name))
+        side_effects = response.content.decode("utf-8")
+        side_effects = json.loads(side_effects)
+        side_effects = str(side_effects['body']['items'][0]['depositMethodQesitm'])
+        print(side_effects)
+        return {str(drug_name): side_effects}
+
+def TranslateToEnlglish(input):
+    translated = GoogleTranslator(source='auto', target='en').translate(input)
+    return translated
+    
+#Questions OPEN API
 api.add_resource(DrugSideEffects, "/drugSideEffects/<string:drug_name>")
-api.add_resource(Drugs, "/drugs/<string:name>/<int:side_effects>")
+api.add_resource(DrugEffects, "/drugEffects/<string:drug_name>")
+api.add_resource(FoodInteraction, "/foodInteraction/<string:drug_name>")
+api.add_resource(DrugPrecautions, "/drugPrecautions/<string:drug_name>")
+api.add_resource(DrugStorage, "/drugStorage/<string:drug_name>")
+
+#Local Database
 api.add_resource(PrescriptionInfo, "/prescriptionInfo/<int:user_id>/<int:prescription_id>")
 api.add_resource(AddPrescription, "/addPrescription/<int:user_id>/<int:prescription_id>/<int:drug_id>")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
