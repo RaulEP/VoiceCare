@@ -4,6 +4,10 @@ from flask import Flask, request, jsonify, make_response
 import flask
 from flask_restful import Api, Resource, reqparse, abort
 import json
+import requests
+import urllib.parse
+import sys
+import codecs
 
 app = Flask(__name__)
 api = Api(app)
@@ -24,14 +28,14 @@ usersdb = {1: {
                                 "drug_id": 1,
                                 "drug_name": "타이레놀",
                                 "dosage": "1 pill",
-                                "frequency_per_day": "5 Days",
-                                "treatment period": "4 days"},
+                                "frequency_per_day": "2 times per day",
+                                "treatment_period": "4 days"},
                                 
                                 {
                                 "drug_id": 2,
                                 "drug_name": "Omeprazole",
                                 "dosage": "1 pill",
-                                "frequency_per_day": "1 time a day",
+                                "frequency_per_day": "1 time per day",
                                 "treatment_period": "3 days"}]
                                 }
                 }
@@ -45,17 +49,20 @@ DrugDetail_put_args.add_argument("dosage", type=str, help="How many pills should
 DrugDetail_put_args.add_argument("frequency_per_day", type=str, help="How many times a day should you take the medicine", required=True)
 DrugDetail_put_args.add_argument("treatment_period", type=str, help="How many days does this medication should be taken", required=True)
 
-
-
 class PrescriptionInfo(Resource):
-
     #Access Prescription Info
-    def get(self, user_id, prescription_id, drug_id=0):
-        if user_id in usersdb.keys():
-            if drug_id != 0:
-                return usersdb[user_id]["prescriptions"][prescription_id]
-            else:
-                return usersdb[user_id]["prescriptions"][prescription_id]
+    def get(self, user_id, prescription_id):
+
+        drug_key = 1
+        messages = {}
+        for dict in usersdb[user_id]["prescriptions"][prescription_id]:
+            name = dict["drug_name"]
+            dosage = dict["dosage"]
+            frequency = dict["frequency_per_day"]
+            period = dict["treatment_period"]
+            messages[drug_key] = "You should take {} of {}, {} for a period of {}".format(dosage, name, frequency, period)
+            drug_key += 1
+        return messages
     
     def put(self, user_id, prescription_id):
         args = DrugDetail_put_args.parse_args()
@@ -72,7 +79,17 @@ class PrescriptionInfo(Resource):
         usersdb[user_id]["prescriptions"][prescription_id][2].update(args)
         return usersdb[user_id]["prescriptions"][prescription_id]
 
-api.add_resource(PrescriptionInfo, "/prescriptionInfo/<int:user_id>/<int:prescription_id>")
+class DrugSideEffects(Resource):
+    def get(self, drug_name):
+        url = 'http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList'
+        service_key ="7xbDbSQ3I2s4q0KHPgv0QRpHHE0FzSK6bflU2VxDLO1R2dD%2B5uaYwPNm9EQKqnlySYgKcJ8aX6m4H0t2jMF1iA%3D%3D"
+        num_of_rows = 3
+        response = requests.get(url, 'serviceKey={}&pageNo={}&numOfRows={}&itemName={}&type=json'.format(service_key, 1,num_of_rows,drug_name))
+        side_effects = response.content.decode("utf-8")
+        side_effects = json.loads(side_effects)
+        side_effects = str(side_effects['body']['items'][0]['seQesitm'])
+        print(side_effects)
+        return {str(drug_name): side_effects}
 
 class Drugs(Resource):  
 
@@ -80,7 +97,9 @@ class Drugs(Resource):
         if side_effects == 1:
             return make_response(flask.json.dumps(drugs[name]["side_effects"], ensure_ascii=False))
 
+api.add_resource(DrugSideEffects, "/drugSideEffects/<string:drug_name>")
 api.add_resource(Drugs, "/drugs/<string:name>/<int:side_effects>")
+api.add_resource(PrescriptionInfo, "/prescriptionInfo/<int:user_id>/<int:prescription_id>")
 
 if __name__ == "__main__":
     app.run(debug=True)
