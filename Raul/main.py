@@ -110,6 +110,7 @@ class Drugs(Resource):
 api.add_resource(DrugSideEffects, "/drugSideEffects/<string:drug_name>")
 api.add_resource(Drugs, "/drugs/<string:name>/<int:side_effects>")
 api.add_resource(PrescriptionInfo, "/prescriptionInfo/<int:user_id>/<int:prescription_id>")
+api.add_resource(AddPrescription, "addPrescription/<int:user_id>/<int:prescription_id>/<int:drug_id>")
 
 if __name__ == "__main__":
     app.run(debug=True)
