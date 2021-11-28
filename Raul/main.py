@@ -63,6 +63,15 @@ class PrescriptionInfo(Resource):
             messages[drug_key] = "You should take {} of {}, {} for a period of {}".format(dosage, name, frequency, period)
             drug_key += 1
         return messages
+class AddPrescription(Resource):
+    def put(self, user_id, prescription_id, drug_id):
+        args = DrugDetail_put_args.parse_args()
+        usersdb[user_id]["prescriptions"][prescription_id].append({"drug_id": drug_id})
+        usersdb[user_id]["prescriptions"][prescription_id][2].update(args)
+        print(usersdb[user_id]["prescriptions"][prescription_id])
+        
+
+class AddDrugToPrescription(Resource):
     
     def put(self, user_id, prescription_id):
         args = DrugDetail_put_args.parse_args()
@@ -77,8 +86,9 @@ class PrescriptionInfo(Resource):
         
         #Adding args into DB.
         usersdb[user_id]["prescriptions"][prescription_id][2].update(args)
+        print()
         return usersdb[user_id]["prescriptions"][prescription_id]
-
+    
 class DrugSideEffects(Resource):
     def get(self, drug_name):
         url = 'http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList'
