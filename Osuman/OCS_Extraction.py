@@ -67,7 +67,7 @@ list_med_det = [med1_det, med2_det, med3_det, med4_det, med5_det]
 userID = 0
 
 medic_dict = {
-    "name": "",  # medicine name
+    "drug_name": "",  # medicine name
     "dosage": "",  # how many pills do you take each time
     "freq_per_day": "",  # how many times per day
     "treatment_period": ""  # for how many days to you take the medicine
@@ -81,7 +81,7 @@ pres_dict = {
 }
 
 for x in range(len(list_med_det)):
-    medic_dict["name"] = list_med[x]
+    medic_dict["drug_name"] = list_med[x]
     a, b, c = get_pills_regex(list_med_det[x])
     medic_dict["dosage"] = a
     medic_dict["freq_per_day"] = b
