@@ -4,15 +4,12 @@
 import requests
 import uuid
 import time
-import json
 import re
 import json
 
 api_url = 'https://e5ccf0131d8f485da4ca458c61b66e38.apigw.ntruss.com/custom/v1/12711/2c50ba4817e810ce4fe4ac713d843b6c87e262ceeb057a523f8e528e0845f9e9/infer'
 secret_key = 'RGlLUkN1RHlFT1lpRGtXcXRtaFZhckVxdGpKaUpHc0I='
-image_file = 'C:\\Users\\Osuman\\Desktop\\sample.jpg'
-
-url_to_backend = ''  # TODO: Specify the url to the API
+image_file = 'sample.jpg'
 
 regex_01 = re.compile("[1-9](정|캡슐)씩[1-9]회[1-9]일")
 regex_02 = re.compile("[1-9]")
@@ -69,7 +66,7 @@ userID = 0
 medic_dict = {
     "drug_name": "",  # medicine name
     "dosage": "",  # how many pills do you take each time
-    "freq_per_day": "",  # how many times per day
+    "frequency_per_day": "",  # how many times per day
     "treatment_period": ""  # for how many days to you take the medicine
 }
 
@@ -84,11 +81,11 @@ for x in range(len(list_med_det)):
     medic_dict["drug_name"] = list_med[x]
     a, b, c = get_pills_regex(list_med_det[x])
     medic_dict["dosage"] = a
-    medic_dict["freq_per_day"] = b
+    medic_dict["frequency_per_day"] = b
     medic_dict["treatment_period"] = c
 
-    pres_dict["prescriptions"].append(medic_dict)
+    ## TODO : add the request
 
-x = requests.post(url_to_backend, data=pres_dict)
+    #pres_dict["prescriptions"].append(medic_dict)
 
-print("Request answer: ", x.text)
+print("Request answer: ")
