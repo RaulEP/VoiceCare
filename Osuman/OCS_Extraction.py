@@ -76,16 +76,17 @@ pres_dict = {
     "prescriptions": []  # The list of medicine (list of dictionaries of type medic_dict)
 
 }
-
+drug_id = 1
 for x in range(len(list_med_det)):
     medic_dict["drug_name"] = list_med[x]
     a, b, c = get_pills_regex(list_med_det[x])
     medic_dict["dosage"] = a
     medic_dict["frequency_per_day"] = b
     medic_dict["treatment_period"] = c
+    
 
-    ## TODO : add the request
-
+    response = requests.put("http://127.0.0.1:5000/prescriptionInfo/1/2/{}".format(drug_id), medic_dict)
+    drug_id += 1
     #pres_dict["prescriptions"].append(medic_dict)
 
 print("Request answer: ")
