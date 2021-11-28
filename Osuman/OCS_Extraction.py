@@ -68,24 +68,24 @@ userID = 0
 
 medic_dict = {
     "name": "",  # medicine name
-    "pills": "",  # how many pills do you take each time
-    "perday": "",  # how many times per day
-    "days": ""  # for how many days to you take the medicine
+    "dosage": "",  # how many pills do you take each time
+    "freq_per_day": "",  # how many times per day
+    "treatment_period": ""  # for how many days to you take the medicine
 }
 
 pres_dict = {
 
     "UserID": userID,  # user ID
-    "prescriptions": []  # The list of medicine (list of dicitonaries of type medic_dict)
+    "prescriptions": []  # The list of medicine (list of dictionaries of type medic_dict)
 
 }
 
 for x in range(len(list_med_det)):
     medic_dict["name"] = list_med[x]
     a, b, c = get_pills_regex(list_med_det[x])
-    medic_dict["pills"] = a
-    medic_dict["perday"] = b
-    medic_dict["days"] = c
+    medic_dict["dosage"] = a
+    medic_dict["freq_per_day"] = b
+    medic_dict["treatment_period"] = c
 
     pres_dict["prescriptions"].append(medic_dict)
 
