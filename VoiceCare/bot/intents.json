@@ -1,0 +1,58 @@
+{
+"intents": 
+[
+        {"tag": "greeting",
+         "patterns": ["Hi", "How are you", "Is anyone there?", "Hello", "Good day", "Hey","What's up",
+		              "Good morning","How are you doing?"],
+         "responses": ["Hello, thanks for visiting", "Good to see you again", "Hi there, how can I help?",
+		                "VoiceCare here to help you"],
+         "context_set": ""
+        },
+		
+        {"tag": "goodbye",
+         "patterns": ["Bye", "See you later", "Goodbye", "Until next time", "See you again","Good bye",
+		              "Good night"],
+         "responses": ["See you later, thanks for visiting", "Have a nice day", "Bye! Come back again soon."]
+        },
+		
+        {"tag": "thanks",
+         "patterns": ["Thanks", "Thank you", "That's helpful", "This was helpful", "Thank you very much", "I'm very thankful"],
+         "responses": ["Happy to help!", "Any time!", "My pleasure"]
+        },
+		
+        {"tag": "medicine_take",
+         "patterns": ["What medicine do I need to take?", "Do I have medicine to take today?", "Show me the medicine I need to take",
+		              "Do I need to take medicine?", "How many times a day do I need to take medicine?", "How many days until I finish my medicine?",
+					  "How many pills do I take?","Display the medicine I am taking","Show me details about my medicine", "I want to see information about my medicine", 
+					  "Tell me more about my medicine", "Can you display my medicine information?", "I want to know about my medicine", "give me a summary about my medicine",
+					  "What is the dosage of my medicine?", "How many pills do I need to take?", "What is the frequency of use of my medicine","What is the treatment period of medicine"],
+         "responses": ["Currently, the medicine you are taking these days is"]
+        },
+		
+        {"tag": "medicine_effect",
+         "patterns": ["I want to learn about medicine side effects", "Does my medicine have bad effects?", "Show me side effects of my prescription",
+		              "Will my medicine give me me bad effects?", "What are the side effects of the medicine I am taking?", "what reaction can I get from this medicine"],
+         "responses": ["In order to learn more about the side effects of your medicine, please select an option:"]
+        },
+		
+		{"tag": "prescription",
+         "patterns": ["Can you show me my prescription?", "Please show me my prescription", "I want to see my prescription",
+		              "Display my prescription", "Give me details about my prescription"],
+         "responses": ["These are the details of your prescription:"]
+        },
+		
+		{"tag": "pharmacy",
+         "patterns": ["Where is the closest pharmacy?", "Is there a pharmacy around?", "Where can I buy my medicine from?",
+		              "Find me a drugstore nearby", "Show me a pharmasy closeby"],
+         "responses": ["The service for finding nearby pharmacies is not available yet. Sorry for the inconvenience"]
+        },
+		
+		{"tag": "nounderstand",
+         "patterns": ["What?", "What do you mean?", "I don't understand", "This is not what I asked for", "I asked something else", "yes","no",
+		              "This is not my question"],
+         "responses": ["It appears I could not understand your question. Please enter 'show menu' if you would like to manually choose options"]
+        }
+
+		
+   ]
+}
